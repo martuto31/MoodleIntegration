@@ -13,7 +13,7 @@ namespace MoodleIntegration.Controllers
         [HttpGet("Callback")]
         public async Task<IActionResult> HandleMoodleCallback(string code)
         {
-            MoodleAuthRequestDTO AuthRquestDTO = new MoodleAuthRequestDTO
+            MoodleAuthRequestDTO AuthRequestDTO = new MoodleAuthRequestDTO
             {
                 Code = code,
                 Client_Id = MoodleAuthConstants.Client_Id,
@@ -31,11 +31,11 @@ namespace MoodleIntegration.Controllers
                 // Create the POST request content with the parameters
                 var content = new FormUrlEncodedContent(new[]
                 {
-                    new KeyValuePair<string, string>("code", AuthRquestDTO.Code),
-                    new KeyValuePair<string, string>("client_id", AuthRquestDTO.Client_Id),
-                    new KeyValuePair<string, string>("client_secret", AuthRquestDTO.Client_Secret),
-                    new KeyValuePair<string, string>("grant_type", AuthRquestDTO.Grant_Type),
-                    new KeyValuePair<string, string>("scope", AuthRquestDTO.Scope)
+                    new KeyValuePair<string, string>("code", AuthRequestDTO.Code),
+                    new KeyValuePair<string, string>("client_id", AuthRequestDTO.Client_Id),
+                    new KeyValuePair<string, string>("client_secret", AuthRequestDTO.Client_Secret),
+                    new KeyValuePair<string, string>("grant_type", AuthRequestDTO.Grant_Type),
+                    new KeyValuePair<string, string>("scope", AuthRequestDTO.Scope)
                 });
 
                 // Send the POST request to the Moodle token endpoint
