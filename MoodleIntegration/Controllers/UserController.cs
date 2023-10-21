@@ -1,7 +1,6 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using MoodleIntegration.Constants;
-using MoodleIntegration.DTO;
+﻿using Microsoft.AspNetCore.Mvc;
+using MoodleIntegration.Services.Auth;
+using MoodleIntegration.Shared.DTO;
 using System.Text.Json;
 
 namespace MoodleIntegration.Controllers
@@ -10,52 +9,30 @@ namespace MoodleIntegration.Controllers
     [ApiController]
     public class UserController : ControllerBase
     {
+        private readonly IAuthService _authService;
+
+        public UserController(IAuthService authService)
+        {
+            _authService = authService;
+        }
+
         [HttpGet("Callback")]
         public async Task<IActionResult> HandleMoodleCallback(string code)
         {
-            MoodleAuthRequestDTO AuthRequestDTO = new MoodleAuthRequestDTO
-            {
-                Code = code,
-                Client_Id = MoodleAuthConstants.Client_Id,
-                Client_Secret = MoodleAuthConstants.Client_Secret,
-                Grant_Type = MoodleAuthConstants.Grant_Type,
-                Scope = MoodleAuthConstants.Scope
-            };
-
             using (var client = new HttpClient())
             {
-                // Define the URL of the Moodle token endpoint
-                string tokenUrl = "http://localhost/local/oauth/token.php";
-                string user_info_url = "http://localhost/local/oauth/user_info.php";
-
-                // Create the POST request content with the parameters
-                var content = new FormUrlEncodedContent(new[]
-                {
-                    new KeyValuePair<string, string>("code", AuthRequestDTO.Code),
-                    new KeyValuePair<string, string>("client_id", AuthRequestDTO.Client_Id),
-                    new KeyValuePair<string, string>("client_secret", AuthRequestDTO.Client_Secret),
-                    new KeyValuePair<string, string>("grant_type", AuthRequestDTO.Grant_Type),
-                    new KeyValuePair<string, string>("scope", AuthRequestDTO.Scope)
-                });
-
-                // Send the POST request to the Moodle token endpoint
-                var response = await client.PostAsync(tokenUrl, content);
+                var response = await _authService.GetTokenAsync(client, code);
 
                 if (response.IsSuccessStatusCode)
                 {
                     var responseContent = await response.Content.ReadAsStringAsync();
                     MoodleTokenDTO moodleToken = JsonSerializer.Deserialize<MoodleTokenDTO>(responseContent);
 
-                    var access_token = new FormUrlEncodedContent(new[]
-                    {
-                        new KeyValuePair<string, string>("access_token", moodleToken.Access_Token)
-                    });
-
-                    var user_info = await client.PostAsync(user_info_url, access_token);
+                    await _authService.SaveUserInfoAsync(client, moodleToken);
                 }
                 else
                 {
-                    // Handle the error response here
+                    return BadRequest(response);
                 }
             }
 

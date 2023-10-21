@@ -5,6 +5,10 @@ VisualStudioVersion = 17.3.32929.385
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MoodleIntegration", "MoodleIntegration\MoodleIntegration.csproj", "{76E3BA59-347B-4655-A200-91B4AA2B4D08}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MoodleIntegration.Services", "MoodleIntegration.Services\MoodleIntegration.Services.csproj", "{8188ED48-179E-4121-A282-60392F0FE024}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MoodleIntegration.Shared", "MoodleIntegration.Shared\MoodleIntegration.Shared.csproj", "{4ADE3B53-9EAB-4DC4-8121-81AE85022107}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +19,14 @@ Global
 		{76E3BA59-347B-4655-A200-91B4AA2B4D08}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{76E3BA59-347B-4655-A200-91B4AA2B4D08}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{76E3BA59-347B-4655-A200-91B4AA2B4D08}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8188ED48-179E-4121-A282-60392F0FE024}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8188ED48-179E-4121-A282-60392F0FE024}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8188ED48-179E-4121-A282-60392F0FE024}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8188ED48-179E-4121-A282-60392F0FE024}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4ADE3B53-9EAB-4DC4-8121-81AE85022107}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4ADE3B53-9EAB-4DC4-8121-81AE85022107}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4ADE3B53-9EAB-4DC4-8121-81AE85022107}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4ADE3B53-9EAB-4DC4-8121-81AE85022107}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
