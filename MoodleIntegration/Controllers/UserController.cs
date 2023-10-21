@@ -25,10 +25,10 @@ namespace MoodleIntegration.Controllers
 
                 if (response.IsSuccessStatusCode)
                 {
-                    var responseContent = await response.Content.ReadAsStringAsync();
-                    MoodleTokenDTO moodleToken = JsonSerializer.Deserialize<MoodleTokenDTO>(responseContent);
+                    var AuthResponseContent = await response.Content.ReadAsStringAsync();
+                    MoodleTokenDTO moodleToken = JsonSerializer.Deserialize<MoodleTokenDTO>(AuthResponseContent);
 
-                    await _authService.SaveUserInfoAsync(client, moodleToken);
+                    var UserInfoResponseContent = await _authService.GetUserInfoAsync(client, moodleToken);
                 }
                 else
                 {

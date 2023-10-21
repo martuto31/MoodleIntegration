@@ -23,14 +23,15 @@ namespace MoodleIntegration.Services.Auth
             return response;
         }
 
-        public async Task SaveUserInfoAsync(HttpClient client, MoodleTokenDTO moodleToken)
+        public async Task<HttpResponseMessage> GetUserInfoAsync(HttpClient client, MoodleTokenDTO moodleToken)
         {
             var access_token = new FormUrlEncodedContent(new[]
             {
                 new KeyValuePair<string, string>("access_token", moodleToken.access_token)
             });
 
-            var user_info = await client.PostAsync(MoodleAuthConstants.User_Info_Url, access_token);
+            var userInfo = await client.PostAsync(MoodleAuthConstants.User_Info_Url, access_token);
+            return userInfo;
         }
     }
 }

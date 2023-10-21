@@ -10,6 +10,6 @@ namespace MoodleIntegration.Services.Auth
     public interface IAuthService
     {
         Task<HttpResponseMessage> GetTokenAsync(HttpClient client, string code);
-        Task SaveUserInfoAsync(HttpClient client, MoodleTokenDTO moodleToken);
+        Task<HttpResponseMessage> GetUserInfoAsync(HttpClient client, MoodleTokenDTO moodleToken);
     }
 }
