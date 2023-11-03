@@ -11,5 +11,6 @@ namespace MoodleIntegration.Services.Auth
     {
         Task<HttpResponseMessage> GetTokenAsync(HttpClient client, string code);
         Task<HttpResponseMessage> GetUserInfoAsync(HttpClient client, MoodleTokenDTO moodleToken);
+        void SaveUserInfo(UserInfoDTO userInfo);
     }
 }

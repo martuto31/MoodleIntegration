@@ -11,6 +11,7 @@ builder.Services.AddSwaggerGen();
 
 // Register services
 builder.Services.AddTransient<IAuthService, AuthService>();
+builder.Services.AddTransient<ICohortManagementService, CohortManagementService>();
 
 var app = builder.Build();
 

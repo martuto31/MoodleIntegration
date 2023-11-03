@@ -8,8 +8,8 @@ namespace MoodleIntegration.Shared.DTO
 {
     public class UserInfoDTO
     {
-        public int id { get; set; }
-        public int idnumber { get; set; }
+        public string id { get; set; }
+        public string idnumber { get; set; }
         public string auth { get; set; }
         public string username { get; set; }
         public string firstname { get; set; }

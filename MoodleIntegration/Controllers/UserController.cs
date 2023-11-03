@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using MathNet.Numerics.Distributions;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Win32;
 using MoodleIntegration.Services.Auth;
 using MoodleIntegration.Shared.DTO;
 using System.ComponentModel.Design;
@@ -11,14 +13,16 @@ namespace MoodleIntegration.Controllers
     public class UserController : ControllerBase
     {
         private readonly IAuthService _authService;
+        private readonly ICohortManagementService _cohortManagementService;
 
-        public UserController(IAuthService authService)
+        public UserController(IAuthService authService, ICohortManagementService cohortManagementService)
         {
             _authService = authService;
+            _cohortManagementService = cohortManagementService;
         }
 
         [HttpGet("Callback")]
-        public async Task<IActionResult> HandleMoodleAuthCallbackAsync(string code)
+        public async Task<IActionResult> HandleMoodleAuthCallbackAsync(string code, string discord_id)
         {
             using (var client = new HttpClient())
             {
@@ -39,7 +43,14 @@ namespace MoodleIntegration.Controllers
                         var UserInfoResponseContent = await UserInfoResponse.Content.ReadAsStringAsync();
                         UserInfoDTO userInfo = JsonSerializer.Deserialize<UserInfoDTO>(UserInfoResponseContent);
 
-
+                        if(userInfo != null)
+                        {
+                            _authService.SaveUserInfo(userInfo);
+                        }
+                        else
+                        {
+                            return NoContent();
+                        }
                     }
                     else
                     {
@@ -53,6 +64,14 @@ namespace MoodleIntegration.Controllers
             }
 
             return Redirect("http://moodledomain.com/local/oauth/index.php");
+        }
+
+        [HttpGet("ExtractStudentsFromUISS")]
+        public ActionResult ExtractStudents()
+        {
+            _cohortManagementService.ExtractStudentDataFromCSV();
+
+            return Ok();
         }
     }
 }
