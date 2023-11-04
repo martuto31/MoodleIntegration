@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Win32;
 using MoodleIntegration.Services.Auth;
 using MoodleIntegration.Shared.DTO;
+using NPOI.OpenXmlFormats.Dml;
 using System.ComponentModel.Design;
 using System.Text.Json;
 
@@ -72,6 +73,27 @@ namespace MoodleIntegration.Controllers
             _cohortManagementService.ExtractStudentDataFromCSV();
 
             return Ok();
+        }
+
+        [HttpPost("GetMoodleCohorts")]
+        public async Task<IActionResult> GetMoodleCohorts()
+        {
+            using(var client = new HttpClient())
+            {
+                var response = await _cohortManagementService.RetrieveMoodleCohorts(client, "9d21c61ac5ffa93a2dc9a3e6102fc67a");
+
+                if (response.IsSuccessStatusCode)
+                {
+                    var responseContent = await response.Content.ReadAsStringAsync();
+                    List<MoodleCohortsDTO> moodleCohorts = JsonSerializer.Deserialize<List<MoodleCohortsDTO>>(responseContent);
+
+                    return Ok();
+                }
+                else
+                {
+                    return BadRequest(response);
+                }
+            }
         }
     }
 }

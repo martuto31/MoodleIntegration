@@ -1,7 +1,9 @@
 ﻿using CsvHelper;
 using CsvHelper.Configuration;
 using MathNet.Numerics.Distributions;
+using MoodleIntegration.Shared.Constants;
 using MoodleIntegration.Shared.DTO;
+using NPOI.SS.Formula.Functions;
 using System;
 using System.Collections.Generic;
 using System.Formats.Asn1;
@@ -51,9 +53,31 @@ namespace MoodleIntegration.Services.Auth
             return records;
         }
 
-        public Task RetrieveStudentsFromMoodleCohorts()
+        public async Task<HttpResponseMessage> RetrieveMoodleCohorts(HttpClient client, string jwt)
         {
-            throw new NotImplementedException();
+            var content = new FormUrlEncodedContent(new[]
+            {
+                    new KeyValuePair<string, string>("wstoken", jwt),
+                    new KeyValuePair<string, string>("wsfunction", "core_cohort_get_cohorts"),
+                    new KeyValuePair<string, string>("moodlewsrestformat", "json")
+            });
+
+            var response = await client.PostAsync(MoodleAuthConstants.Rest_API_Url, content);
+            return response;
+        }
+
+        public async Task<HttpResponseMessage> RetrieveStudentsFromMoodleCohorts(HttpClient client, string cohortId, string jwt)
+        {
+            var content = new FormUrlEncodedContent(new[]
+            {
+                    new KeyValuePair<string, string>("wstoken", jwt),
+                    new KeyValuePair<string, string>("wsfunction", "core_cohort_get_cohort_members"),
+                    new KeyValuePair<string, string>("moodlewsrestformat", "json"),
+                    new KeyValuePair<string, string>("cohortids[]", cohortId)
+            });
+
+            var response = await client.PostAsync(MoodleAuthConstants.Rest_API_Url, content);
+            return response;
         }
     }
 }

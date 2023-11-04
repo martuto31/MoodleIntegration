@@ -17,7 +17,7 @@ namespace MoodleIntegration.Services.Auth
                     new KeyValuePair<string, string>("client_secret", MoodleAuthConstants.Client_Secret),
                     new KeyValuePair<string, string>("grant_type", MoodleAuthConstants.Grant_Type),
                     new KeyValuePair<string, string>("scope", MoodleAuthConstants.Scope)
-                });
+            });
 
             // Send the POST request to the Moodle token endpoint
             var response = await client.PostAsync(MoodleAuthConstants.TokenUrl, content);

@@ -14,5 +14,6 @@ namespace MoodleIntegration.Shared.Constants
         public static string Scope = "user_info";
         public static string TokenUrl = "http://localhost/local/oauth/token.php";
         public static string User_Info_Url = "http://localhost/local/oauth/user_info.php";
+        public static string Rest_API_Url = "http://localhost/webservice/rest/server.php";
     }
 }

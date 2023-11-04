@@ -10,7 +10,8 @@ namespace MoodleIntegration.Services.Auth
     public interface ICohortManagementService
     {
         List<StudentInfoDTO> ExtractStudentDataFromCSV();
-        Task RetrieveStudentsFromMoodleCohorts();
+        Task<HttpResponseMessage> RetrieveMoodleCohorts(HttpClient client, string jwt);
+        Task<HttpResponseMessage> RetrieveStudentsFromMoodleCohorts(HttpClient client, string cohortId, string jwt);
         Task AddStudentsToUpdateCohortCSV();
         Task AddStudentsTODeleteFromCohortsCSV();
         Task DeleteStudentsFromMoodleCohorts();
