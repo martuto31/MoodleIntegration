@@ -71,6 +71,7 @@ namespace MoodleIntegration.Controllers
         public ActionResult ExtractStudents()
         {
             _cohortManagementService.ExtractStudentDataFromCSV();
+            _cohortManagementService.ExtractStudentDataByCohortsFromCSV();
 
             return Ok();
         }

@@ -10,6 +10,8 @@ using System.Formats.Asn1;
 using System.Globalization;
 using System.Linq;
 using System.Text;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace MoodleIntegration.Services.Auth
@@ -21,9 +23,21 @@ namespace MoodleIntegration.Services.Auth
             throw new NotImplementedException();
         }
 
-        public Task AddStudentsToUpdateCohortCSV()
+        public async Task AddStudentsToUpdateCohortCSV(HttpClient client, string jwt)
         {
-            throw new NotImplementedException();
+            var getMoodleCohortsResponse = await RetrieveMoodleCohorts(client, jwt);
+            List<MoodleCohortsDTO> allMoodleCohorts = new List<MoodleCohortsDTO>();
+
+            if (getMoodleCohortsResponse != null && getMoodleCohortsResponse.IsSuccessStatusCode)
+            {
+                var getMoodleCohortsResponseContent = await getMoodleCohortsResponse.Content.ReadAsStringAsync();
+                allMoodleCohorts = JsonSerializer.Deserialize<List<MoodleCohortsDTO>>(getMoodleCohortsResponseContent);
+            }
+
+            foreach (var cohort in allMoodleCohorts)
+            {
+
+            }
         }
 
         public Task DeleteStudentsFromMoodleCohorts()
@@ -34,12 +48,12 @@ namespace MoodleIntegration.Services.Auth
         public List<StudentInfoDTO> ExtractStudentDataFromCSV()
         {
             List<StudentInfoDTO> records = new List<StudentInfoDTO>();
-            string pathToCSV = @"C:\\Users\\User\\Downloads\first_import.csv";
+            string pathToCSV = @"C:\\Users\\User\\Downloads\cohort_interrupt.csv";
 
             // Read the CSV file and map it to a list of StudentInfoDTO objects
             var config = new CsvConfiguration(CultureInfo.InvariantCulture)
             {
-                Delimiter = "\t", // Set the delimiter to tab
+
                 HasHeaderRecord = true, // The first row is the header
                 Encoding = Encoding.UTF8 // Set the encoding
             };
@@ -51,6 +65,15 @@ namespace MoodleIntegration.Services.Auth
             }
 
             return records;
+        }
+
+        public Dictionary<string, List<StudentInfoDTO>> ExtractStudentDataByCohortsFromCSV()
+        {
+            var unsortedRecords = this.ExtractStudentDataFromCSV();
+            // Groups the students by cohortId and sets the dictionary key to the cohortId
+            var groupedRecords = unsortedRecords.GroupBy(s => s.Cohort1).ToDictionary(g => g.Key, g => g.ToList());
+
+            return groupedRecords;
         }
 
         public async Task<HttpResponseMessage> RetrieveMoodleCohorts(HttpClient client, string jwt)
