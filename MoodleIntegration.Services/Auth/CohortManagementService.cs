@@ -4,6 +4,7 @@ using MathNet.Numerics.Distributions;
 using MoodleIntegration.Shared.Constants;
 using MoodleIntegration.Shared.DTO;
 using NPOI.SS.Formula.Functions;
+using Org.BouncyCastle.Asn1;
 using System;
 using System.Collections.Generic;
 using System.Formats.Asn1;
@@ -24,7 +25,7 @@ namespace MoodleIntegration.Services.Auth
             if (studentsToAddToMoodle != null && studentsToAddToMoodle.Any())
             {
                 // Specify the path to your CSV file
-                string filePath = @"C:\\Users\\User\\Downloads\MoodleUpdate.csv";
+                string filePath = $@"C:\\Users\\User\\Downloads\MoodleUpdateDate{DateTime.UtcNow.ToShortDateString}.csv";
 
                 // Create a CSV configuration (optional)
                 var config = new CsvConfiguration(CultureInfo.InvariantCulture)
@@ -47,13 +48,14 @@ namespace MoodleIntegration.Services.Auth
             }
         }
 
-        public void AddStudentsToDeleteFromCohortsCSV(HttpClient client, string jwt, List<UserInfoDTO> studentsRemovedFromCohort)
+        public async Task AddStudentsToDeleteFromCohortsCSV(HttpClient client, string jwt, List<UserInfoDTO> studentsRemovedFromCohort, int cohortId)
         {
             // Assuming studentsToAddToMoodle is not null
             if (studentsRemovedFromCohort != null && studentsRemovedFromCohort.Any())
             {
+                var dateNow = DateTime.UtcNow.ToShortDateString();
                 // Specify the path to your CSV file
-                string filePath = @"C:\\Users\\User\\Downloads\MoodleDeleteFromCohort.csv";
+                string filePath = $@"C:\\Users\\User\\Downloads\MoodleDeleteFromCohort{dateNow}.csv";
 
                 // Create a CSV configuration (optional)
                 var config = new CsvConfiguration(CultureInfo.InvariantCulture)
@@ -66,9 +68,11 @@ namespace MoodleIntegration.Services.Auth
                 using (var writer = new CsvWriter(new StreamWriter(filePath, append: true, encoding: Encoding.UTF8), config))
                 {
                     writer.WriteRecords(studentsRemovedFromCohort);
+                    writer.WriteComment($"Cohort: {cohortId}");
                 }
 
-                // data added
+                // Remove the students from the cohort
+                await DeleteStudentsFromMoodleCohort(client, jwt, studentsRemovedFromCohort, cohortId);
             }
             else
             {
@@ -76,9 +80,39 @@ namespace MoodleIntegration.Services.Auth
             }
         }
 
-        public async Task DeleteStudentsFromMoodleCohort(HttpClient client, string jwt, int cohortId, int studentId)
+        public async Task DeleteStudentsFromMoodleCohort(HttpClient client, string jwt, List<UserInfoDTO> studentsRemovedFromCohort, int cohortId)
         {
-            throw new NotImplementedException();
+            foreach (var student in studentsRemovedFromCohort)
+            {
+                var content = new FormUrlEncodedContent(new[]
+                {
+                    new KeyValuePair<string, string>("wstoken", jwt),
+                    new KeyValuePair<string, string>("wsfunction", "core_cohort_delete_cohort_members"),
+                    new KeyValuePair<string, string>("moodlewsrestformat", "json"),
+                    new KeyValuePair<string, string>("members[0][cohortid]", cohortId.ToString()),
+                    new KeyValuePair<string, string>("members[0][userid]", student.id.ToString()),
+                });
+            
+                await client.PostAsync(MoodleAuthConstants.Rest_API_Url, content);
+            }
+        }
+
+        public async Task AddStudentToMoodleCohort(HttpClient client, string jwt, List<StudentInfoDTO> studentsToAddToCohort)
+        {
+            // in development
+            foreach (var student in studentsToAddToCohort)
+            {
+                var content = new FormUrlEncodedContent(new[]
+                {
+                    new KeyValuePair<string, string>("wstoken", jwt),
+                    new KeyValuePair<string, string>("wsfunction", "core_cohort_delete_cohort_members"),
+                    new KeyValuePair<string, string>("moodlewsrestformat", "json"),
+                    new KeyValuePair<string, string>("members[0][cohortid]", student.Cohort1.ToString()),
+                    //new KeyValuePair<string, string>("members[0][userid]", student..ToString()),
+                });
+
+                await client.PostAsync(MoodleAuthConstants.Rest_API_Url, content);
+            }
         }
 
         public async Task ExtractStudentsToRemoveOrAddToMoodleAsync(HttpClient client, string jwt)
@@ -118,7 +152,7 @@ namespace MoodleIntegration.Services.Auth
 
                 if (moodleUpdateData.studentsToRemoveFromCohort != null && moodleUpdateData.studentsToRemoveFromCohort.Any())
                 {
-                    AddStudentsToDeleteFromCohortsCSV(client, jwt, moodleUpdateData.studentsToRemoveFromCohort);
+                    AddStudentsToDeleteFromCohortsCSV(client, jwt, moodleUpdateData.studentsToRemoveFromCohort, moodleCohort.id);
                 }
             }
         }

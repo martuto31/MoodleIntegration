@@ -13,8 +13,8 @@ namespace MoodleIntegration.Services.Auth
         Task<List<MoodleCohortsDTO>> GetMoodleCohortsAsync(HttpClient client, string jwt);
         Task<List<MoodleCohortUsersDTO>> GetStudentsIDsFromMoodleCohortsAsync(HttpClient client, int cohortId, string jwt);
         Task ExtractStudentsToRemoveOrAddToMoodleAsync(HttpClient client, string jwt);
-        Task DeleteStudentsFromMoodleCohort(HttpClient client, string jwt, int cohortId, int studentId);
+        Task DeleteStudentsFromMoodleCohort(HttpClient client, string jwt, List<UserInfoDTO> studentsRemovedFromCohort, int cohortId);
+        Task AddStudentsToDeleteFromCohortsCSV(HttpClient client, string jwt, List<UserInfoDTO> studentsRemovedFromCohort, int cohortId);
         void AddStudentsToUpdateCohortCSV(HttpClient client, string jwt, List<StudentInfoDTO> studentsToAddToMoodle);
-        void AddStudentsToDeleteFromCohortsCSV(HttpClient client, string jwt, List<UserInfoDTO> studentsToAddToMoodle);
     }
 }
